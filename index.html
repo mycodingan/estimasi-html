@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Mean, Median, Modus</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- AOS CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4" data-aos="fade-down">Aplikasi Estimasi Mean, Median, dan Modus</h1>
+
+    <!-- Penjelasan Materi -->
+    <div class="card" data-aos="zoom-in">
+        <div class="card-body">
+            <h5 class="card-title">Penjelasan Mean, Median, dan Modus</h5>
+            <p><strong>Mean (Rata-rata):</strong> Jumlah semua nilai dibagi dengan banyaknya data.</p>
+            <p><strong>Median:</strong> Nilai tengah dari kumpulan data setelah diurutkan.</p>
+            <p><strong>Modus:</strong> Nilai yang paling sering muncul dalam kumpulan data.</p>
+        </div>
+    </div>
+
+    <!-- Form Input Data -->
+    <div class="card mt-4" data-aos="zoom-in">
+        <div class="card-body">
+            <h5 class="card-title">Masukkan Data Anda</h5>
+            <p class="card-text">Tambahkan nilai ke dalam tabel di bawah ini:</p>
+            <button class="btn btn-success mb-3" onclick="tambahBaris()">Tambah Baris</button>
+            <button class="btn btn-danger mb-3" onclick="hapusBaris()">Hapus Baris</button>
+
+            <table class="table table-bordered" id="dataTabel">
+                <thead class="thead-light">
+                    <tr>
+                        <th>No</th>
+                        <th>Nilai</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><input type="number" class="form-control" id="nilai1"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <button class="btn btn-primary" onclick="hitung()">Hitung Mean, Median, Modus</button>
+        </div>
+    </div>
+
+    <!-- Hasil Perhitungan -->
+    <div id="hasilPerhitungan" class="mt-5" data-aos="fade-up"></div>
+</div>
+
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- AOS JS -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init();
+
+    let barisCounter = 1;
+
+    // Fungsi untuk menambah baris baru pada tabel
+    function tambahBaris() {
+        barisCounter++;
+        let tabel = document.getElementById('dataTabel').getElementsByTagName('tbody')[0];
+        let baris = tabel.insertRow();
+        let selNo = baris.insertCell(0);
+        let selNilai = baris.insertCell(1);
+
+        selNo.innerHTML = barisCounter;
+        selNilai.innerHTML = `<input type="number" class="form-control" id="nilai${barisCounter}">`;
+    }
+
+    // Fungsi untuk menghapus baris terakhir pada tabel
+    function hapusBaris() {
+        if (barisCounter > 1) {
+            document.getElementById('dataTabel').deleteRow(barisCounter);
+            barisCounter--;
+        } else {
+            alert("Tidak bisa menghapus semua baris.");
+        }
+    }
+
+    // Fungsi untuk menghitung Mean, Median, Modus
+    function hitung() {
+        let dataArray = [];
+        for (let i = 1; i <= barisCounter; i++) {
+            let nilai = document.getElementById(`nilai${i}`).value;
+            if (nilai) {
+                dataArray.push(Number(nilai));
+            }
+        }
+
+        if (dataArray.length === 0) {
+            alert("Masukkan setidaknya satu nilai!");
+            return;
+        }
+
+        // Menghitung Mean
+        let total = dataArray.reduce((acc, val) => acc + val, 0);
+        let mean = total / dataArray.length;
+
+        // Menghitung Median
+        dataArray.sort((a, b) => a - b);
+        let median;
+        if (dataArray.length % 2 === 0) {
+            median = (dataArray[dataArray.length / 2 - 1] + dataArray[dataArray.length / 2]) / 2;
+        } else {
+            median = dataArray[Math.floor(dataArray.length / 2)];
+        }
+
+        // Menghitung Modus
+        let frekuensi = {};
+        dataArray.forEach(val => {
+            frekuensi[val] = (frekuensi[val] || 0) + 1;
+        });
+
+        let maxFrekuensi = Math.max(...Object.values(frekuensi));
+        let modus = Object.keys(frekuensi).filter(key => frekuensi[key] == maxFrekuensi);
+
+        // Menampilkan Hasil
+        let hasilHTML = `
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Hasil Perhitungan</h5>
+                <p class="card-text"><strong>Data:</strong> ${dataArray.join(', ')}</p>
+                <p class="card-text"><strong>Mean (Rata-rata):</strong> ${mean.toFixed(2)}</p>
+                <p class="card-text"><strong>Median:</strong> ${median}</p>
+                <p class="card-text"><strong>Modus:</strong> ${modus.join(', ')}</p>
+            </div>
+        </div>
+        `;
+
+        document.getElementById('hasilPerhitungan').innerHTML = hasilHTML;
+    }
+</script>
+</body>
+</html>
